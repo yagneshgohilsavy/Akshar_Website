@@ -9,27 +9,38 @@ const app = express();
 const port = Number(process.env.PORT) || 3000;
 const host = process.env.HOST || '0.0.0.0';
 
-// 1. Immediately call listen() so Hostinger's healthcheck detects it within 3 seconds
-const server = app.listen(port, host, () => {
-  console.log(`Server is running on http://${host}:${port}`);
-});
-
-// 2. Serve static client assets from dist/client
+// 1. Serve static client assets from dist/client
 app.use(express.static(path.join(__dirname, 'dist', 'client'), {
   maxAge: '1h',
   immutable: false,
 }));
 
-// 3. Load React Router server build and handle all requests
-const build = await import('./dist/server/index.js');
+// 2. Wrap async import in a request handler function without top-level await
+let buildPromise = null;
+function getBuild() {
+  if (!buildPromise) {
+    buildPromise = import('./dist/server/index.js');
+  }
+  return buildPromise;
+}
 
-app.all(
-  '/{*splat}',
-  createRequestHandler({
-    build,
-    mode: process.env.NODE_ENV || 'production',
-  })
-);
+app.all('/{*splat}', async (req, res, next) => {
+  try {
+    const build = await getBuild();
+    const handler = createRequestHandler({
+      build,
+      mode: process.env.NODE_ENV || 'production',
+    });
+    return handler(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 3. Immediately call listen() synchronously on startup
+const server = app.listen(port, host, () => {
+  console.log(`Server is running on http://${host}:${port}`);
+});
 
 ['SIGTERM', 'SIGINT'].forEach((signal) => {
   process.once(signal, () => server.close(console.error));
