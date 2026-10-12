@@ -7,8 +7,8 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "react-router dev --port 3000",
-    "build": "react-router build",
+    "dev": "vite",
+    "build": "vite build",
     "start": "react-router-serve ./dist/server/index.js",
     "lint": "eslint . --quiet; lint_status=$?; eslint \"src/**/*.tsx\" --config eslint.config.mjs --format ./eslint.unicode-escapes-formatter.mjs --no-error-on-unmatched-pattern; exit $lint_status",
     "lint:warn": "eslint .",
@@ -69,6 +69,8 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
+    "vite": "^7.3.5",
+    "react-router-dom": "^7.0.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
