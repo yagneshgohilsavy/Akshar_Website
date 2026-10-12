@@ -1,0 +1,7 @@
+import type { Route } from './+types/product.$handle';
+import { getProductByHandle, EcommerceApiError, toPriceUnits } from '@/api/ecommerce-api';
+import { seo, absoluteUrl, siteOriginFrom } from '@/lib/seo';
+import { ProductDetail } from '@/components/product-detail';
+export async function loader({params}:Route.LoaderArgs){try{return {product:await getProductByHandle(params.handle)};}catch(error){if(error instanceof EcommerceApiError&&error.status===404)throw new Response('Service not found',{status:404});throw error;}}
+export function meta({matches,location,loaderData}:Route.MetaArgs){if(!loaderData)return seo({matches,location},{title:'Appointment not found | Akshar Healthcare',description:'This appointment service is no longer available. Contact Akshar Healthcare for assistance.',noindex:true});const {product}=loaderData;return seo({matches,location},{title:product.seo.title,description:product.seo.description,image:product.seo.image,noindex:product.seo.noindex,jsonLd:{'@context':'https://schema.org','@type':'Product',name:product.title,description:product.seo.description,...(product.seo.image?{image:product.seo.image}:{}),offers:{'@type':'Offer',url:absoluteUrl(siteOriginFrom(matches),location.pathname),price:toPriceUnits(product.price_in_cents,product.currency_info),priceCurrency:product.currency.toUpperCase(),availability:product.purchasable?'https://schema.org/InStock':'https://schema.org/OutOfStock'}}});}
+export default function ProductPage({loaderData}:Route.ComponentProps){return <ProductDetail product={loaderData.product}/>;}

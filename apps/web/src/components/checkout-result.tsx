@@ -1,0 +1,4 @@
+import { useEffect } from 'react';
+import { Link } from 'react-router';
+import { CheckCircle2, CalendarDays } from 'lucide-react';
+export function CheckoutResult({success}:{success:boolean}){useEffect(()=>{if(success){localStorage.removeItem('e-commerce-cart');}},[success]);return <main className="section narrow result-page">{success?<CheckCircle2 size={58}/>:<CalendarDays size={58}/>}<span className="eyebrow">AKSHAR HEALTHCARE</span><h1>{success?'Thank you for your booking.':'Checkout was not completed.'}</h1><p>{success?'Your booking has been confirmed through our online store. Your receipt and appointment details will be sent using the contact information you provided at checkout.':'No payment was taken for this cancelled checkout. You can return to our appointment catalogue and choose another time.'}</p><Link className="button" to="/health-packages">Back to Health Packages</Link><p>Questions? Call <a href="tel:+919099941978">+91 9099941978</a>.</p></main>}
