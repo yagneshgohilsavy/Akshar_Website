@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node -e \"const fs=require('fs'); if(fs.existsSync('dist/client')) fs.copyFileSync('index.html', 'dist/client/index.html');\"",
     "start": "react-router-serve ./dist/server/index.js",
     "lint": "eslint . --quiet; lint_status=$?; eslint \"src/**/*.tsx\" --config eslint.config.mjs --format ./eslint.unicode-escapes-formatter.mjs --no-error-on-unmatched-pattern; exit $lint_status",
     "lint:warn": "eslint .",
